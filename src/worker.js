@@ -174,8 +174,12 @@ worker.on('message', function (request) {
  */
 worker.register = function (methods) {
 
+  console.log(methods);
+  // console.log(typeof methods[0]);
   if (methods) {
     for (var name in methods) {
+      // console.log(name);
+      // console.log(typeof name);
       if (methods.hasOwnProperty(name)) {
         worker.methods[name] = methods[name];
       }

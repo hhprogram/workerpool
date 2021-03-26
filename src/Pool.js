@@ -122,17 +122,20 @@ Pool.prototype.exec = function (method, params, options) {
       if (tasks.indexOf(task) !== -1) {
         // task is still queued -> start the timer later on
         task.timeout = delay;
+        console.log("quesed" + method);
         return resolver.promise;
       }
       else {
         // task is already being executed -> start timer immediately
+        console.log("already" + method);
         return originalTimeout.call(resolver.promise, delay);
       }
     };
 
     // trigger task execution
     this._next();
-
+    console.log(method);
+    console.log(resolver.promise);
     return resolver.promise;
   }
   else if (typeof method === 'function') {
@@ -196,6 +199,7 @@ Pool.prototype._next = function () {
 
     // find an available worker
     var worker = this._getWorker();
+    console.log('next' + worker);
     if (worker) {
       // get the first task from the queue
       var me = this;
@@ -209,6 +213,7 @@ Pool.prototype._next = function () {
           .catch(function () {
             // if the worker crashed and terminated, remove it from the pool
             if (worker.terminated) {
+              console.log("was terminated, revmoe from pool");
               return me._removeWorker(worker);
             }
           }).then(function() {
@@ -239,6 +244,7 @@ Pool.prototype._next = function () {
 Pool.prototype._getWorker = function() {
   // find a non-busy worker
   var workers = this.workers;
+  console.log(workers);
   for (var i = 0; i < workers.length; i++) {
     var worker = workers[i];
     if (worker.busy() === false) {

@@ -5,6 +5,9 @@ var path = require('path');
 var childProcess = require('child_process');
 var findProcess = require('find-process');
 const { CancellationError } = require('../src/Promise');
+const { Exception } = require('handlebars');
+const EventEmitter = require('events').EventEmitter;
+const Pool = require('../src/Pool')
 
 function add(a, b) {
   return a + b;
@@ -462,6 +465,52 @@ describe('WorkerHandler', function () {
           })
         }, 100);
       });
+    });
+  });
+
+  describe('workerAlreadyTerminated', function () {
+    it('worker handler checks if terminated before handling message', function (done) {
+      var handler = new WorkerHandler();
+      const worker = handler.worker;
+      handler.worker = null;
+      handler.terminated = true;
+      console.log("checking...");
+      worker.emit('message', 'ready');
+      // require('../src/environment');
+      done();
+      // try {
+      //   const toExecute = handler.exec('run', [String(add), [2, 4]]);
+      //   // handler.worker = null;
+      //   // toExecute.then(result => console.log(result))
+      // } catch (err) {
+      //   assert.strictEqual(err.message, "Cannot read property 'ready' of null");
+      //   done();
+      // }
+    });
+    it('same error', async function (done) {
+      var pool = new Pool(__dirname + '/workers/simple.js', { workerType: 'thread', minWorkers: 1, maxWorkers:1 });
+      // console.log(pool.workers);
+      // const workerHandler = pool.workers[0];
+      // workerHandler.worker = null;
+      // workerHandler.terminated = true;
+      // console.log(pool.workers);
+      // const dos = await pool.exec('multiply', [2,3]);
+      // console.log("ehll");
+      done();
+      // // const workerHandler = pool.workers[0];
+      // // workerHandler.worker = null;
+      // console.log(pool.workers);
+      // await pool.exec('multiply', [2,3]);
+      // await dos.then(result => {
+      //   console.log(result);
+        // pool.terminate();
+        // assert.strictEqual(result, 6);
+      // });
+      // return pool.exec('multiply', [2,3]).then(function (result) {
+      //   console.log('there');
+      //   pool.terminate();
+      //   assert.strictEqual(result, 6);
+      // });
     });
   });
 });

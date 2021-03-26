@@ -216,7 +216,15 @@ function WorkerHandler(script, _options) {
   // queue for requests that are received before the worker is ready
   this.requestQueue = [];
   this.worker.on('message', function (response) {
+    // console.log(response);
+    // // new code -->
+    if (me.terminated) {
+      console.log("terminated!");
+      return;
+    }
+    console.log(response);
     if (typeof response === 'string' && response === 'ready') {
+      console.log(response);
       me.worker.ready = true;
       dispatchQueuedRequests();
     } else {
@@ -400,6 +408,7 @@ WorkerHandler.prototype.terminate = function (force, callback) {
     // all tasks are finished. kill the worker
     var cleanup = function(err) {
       me.terminated = true;
+      // me.removeEventListener('message', )
       me.worker = null;
       me.terminating = false;
       if (me.terminationHandler) {
